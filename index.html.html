@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlippinFees">
+<title>FlippinFees — eBay Fee & Profit Calculator</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"FlippinFees","short_name":"FlippinFees","start_url":".","display":"standalone","background_color":"#0a0e1a","theme_color":"#0a0e1a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%230a0e1a%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
+<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%230a0e1a%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>'>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-elev: #131826;
+    --bg-elev-2: #1a2032;
+    --border: #232a3d;
+    --border-bright: #2f3854;
+    --text: #e8ecf5;
+    --text-dim: #8a93a8;
+    --text-faint: #5a6378;
+    --accent: #00d97a;
+    --accent-dim: #00a85e;
+    --warn: #ff5b5b;
+    --warn-dim: #c93a3a;
+    --gold: #f5b942;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: 'ss01', 'cv11';
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(0, 217, 122, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 100%, rgba(255, 91, 91, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 4px 4px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    box-shadow: 0 0 20px rgba(0, 217, 122, 0.3);
+  }
+  .logo-text { font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+  .logo-text span { color: var(--accent); }
+  .header-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .header-meta b { color: var(--accent); font-weight: 600; }
+
+  /* Card */
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  /* Inputs */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .field-hint { font-size: 11px; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-prefix {
+    position: absolute;
+    left: 14px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    pointer-events: none;
+    font-size: 16px;
+  }
+  input[type="number"], input[type="text"], select {
+    width: 100%;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 14px 14px 32px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 500;
+    transition: border-color 0.15s, background 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  select {
+    padding: 14px 36px 14px 14px;
+    font-family: 'Inter', sans-serif;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%238a93a8' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #1f2638;
+  }
+  input::placeholder { color: var(--text-faint); }
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  /* Toggles */
+  .toggle-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toggle {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .toggle:hover { border-color: var(--border-bright); }
+  .toggle.active {
+    background: rgba(0, 217, 122, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .toggle.active[data-status="below"] {
+    background: rgba(255, 91, 91, 0.12);
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+  .toggle.active[data-status="above"] {
+    background: rgba(245, 185, 66, 0.10);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* Result panel */
+  .result-card {
+    background: linear-gradient(140deg, #131826 0%, #1a2032 100%);
+    border: 1px solid var(--border-bright);
+    border-radius: 22px;
+    padding: 22px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .profit-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .profit-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .profit-margin {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .profit-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 4px 0 18px;
+  }
+  .profit-value.positive { color: var(--accent); }
+  .profit-value.negative { color: var(--warn); }
+  .profit-value.neutral { color: var(--text); }
+
+  .breakdown {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    display: grid;
+    gap: 10px;
+  }
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  .breakdown-label {
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breakdown-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-faint);
+  }
+  .breakdown-row.fee .breakdown-label::before { background: var(--warn); }
+  .breakdown-row.cost .breakdown-label::before { background: var(--gold); }
+  .breakdown-row.income .breakdown-label::before { background: var(--accent); }
+  .breakdown-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .breakdown-row.fee .breakdown-value { color: var(--warn); }
+  .breakdown-row.income .breakdown-value { color: var(--accent); }
+
+  .breakdown-detail {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-left: 14px;
+  }
+
+  /* Effective fee meter */
+  .meter {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .meter-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .meter-value {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--warn);
+  }
+  .meter-bar {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 50%, var(--warn) 100%);
+    transition: width 0.3s ease;
+    border-radius: 3px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.6;
+  }
+  .footer a { color: var(--text-dim); text-decoration: none; }
+
+  /* Subtle reveal */
+  .card, .result-card {
+    animation: fadeUp 0.4s ease both;
+  }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Top Rated badge */
+  .badge-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .badge-toggle {
+    flex: 1;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    font-weight: 600;
+  }
+  .badge-toggle.active {
+    background: rgba(245, 185, 66, 0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* Improved logo mark — coin/dollar */
+  .logo-mark {
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 7px;
+    border: 1.5px solid rgba(10, 14, 26, 0.25);
+    pointer-events: none;
+  }
+
+  /* Landing intro */
+  .intro {
+    background: linear-gradient(140deg, rgba(0, 217, 122, 0.06) 0%, rgba(0, 217, 122, 0) 60%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px 20px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .intro h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .intro h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .intro p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .intro-feats {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .intro-feat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .intro-feat::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: 900;
+  }
+
+  /* Advanced section accordion */
+  .advanced-toggle {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--border-bright);
+    color: var(--text-dim);
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.15s;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .advanced-toggle:hover { color: var(--text); border-color: var(--text-faint); }
+  .advanced-toggle .chev {
+    transition: transform 0.2s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .advanced-toggle.open .chev { transform: rotate(180deg); }
+  .advanced { display: none; }
+  .advanced.open { display: block; animation: fadeUp 0.25s ease; }
+
+  /* Checkbox-style toggle for boolean advanced options */
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .switch-row:last-child { border-bottom: none; }
+  .switch-label {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .switch-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+  .switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    transition: all 0.2s;
+  }
+  .switch.on { background: rgba(0, 217, 122, 0.2); border-color: var(--accent); }
+  .switch.on::after { left: 20px; background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2v20M16 6.5c0-1.93-1.79-3.5-4-3.5s-4 1.57-4 3.5 1.79 3 4 3.5 4 1.57 4 3.5-1.79 3.5-4 3.5-4-1.57-4-3.5" stroke="#0a0e1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">Flippin<span>Fees</span></div>
+    </div>
+    <div class="header-meta">
+      eBay Fee Calculator<br>
+      <b>2026 rates</b>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <div class="intro">
+    <h1>Know your <em>real</em> profit<br>before you list.</h1>
+    <p>Fast, accurate eBay fee math for every category — including final value fees, per-order fees, promoted listings, and seller status penalties.</p>
+    <div class="intro-feats">
+      <span class="intro-feat">36+ categories</span>
+      <span class="intro-feat">2026 rates</span>
+      <span class="intro-feat">no signup</span>
+    </div>
+  </div>
+
+  <!-- LISTING DETAILS -->
+  <div class="card">
+    <div class="card-title">Listing Details</div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Sale Price (excl. tax)</span>
+        <span class="field-hint">item price only</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="salePrice" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Category</span>
+        <span class="field-hint" id="catRate">—</span>
+      </label>
+      <select id="category"></select>
+    </div>
+
+    <div class="field" style="margin-bottom: 4px;">
+      <label class="field-label"><span>Store Subscription</span></label>
+      <div class="toggle-row">
+        <button class="toggle active" data-store="false">No Store / Starter</button>
+        <button class="toggle" data-store="true">Basic Store +</button>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top: 14px; margin-bottom: 4px;">
+      <label class="field-label">
+        <span>Seller Performance Status</span>
+        <span class="field-hint" id="statusHint">no fee adjustment</span>
+      </label>
+      <div class="toggle-row">
+        <button class="toggle" data-status="below">Below Standard</button>
+        <button class="toggle active" data-status="above">Above Standard</button>
+        <button class="toggle" data-status="top">Top Rated</button>
+      </div>
+    </div>
+
+    <div class="field" id="trsPlusField" style="margin-top: 14px; display: none;">
+      <label class="field-label">
+        <span>Top Rated Plus listing?</span>
+        <span class="field-hint">1-day handling + 30-day free returns</span>
+      </label>
+      <div class="badge-row">
+        <button class="badge-toggle active" data-trsplus="false">Standard Listing</button>
+        <button class="badge-toggle" data-trsplus="true">TRS Plus −10%</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHIPPING & TAX -->
+  <div class="card">
+    <div class="card-title">Shipping & Tax</div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Shipping Charged to Buyer</span>
+        <span class="field-hint">$0 = free shipping</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="shipCharged" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Your Actual Shipping Cost</span>
+        <span class="field-hint">label + packaging</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="shipCost" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Sales Tax (paid by buyer)</span>
+        <span class="field-hint" id="taxHint">collected by eBay · remitted to state</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="salesTax" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom: 0;">
+      <label class="field-label"><span>Charge FVF on tax?</span></label>
+      <div class="toggle-row">
+        <button class="toggle active" data-taxfvf="false">No (typical)</button>
+        <button class="toggle" data-taxfvf="true">Yes (some states)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COSTS -->
+  <div class="card">
+    <div class="card-title">Your Costs</div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Cost of Goods Sold (COGS)</span>
+        <span class="field-hint">what you paid for item</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="cogs" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Promoted Listing Ad Rate</span>
+        <span class="field-hint" id="promoHint">0%</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">%</span>
+        <input type="number" id="promoRate" placeholder="0" step="0.1" min="0" max="20" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">
+        <span>Other Costs</span>
+        <span class="field-hint">supplies, gas, etc</span>
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="otherCost" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+    </div>
+  </div>
+
+  <!-- ADVANCED OPTIONS -->
+  <button class="advanced-toggle" id="advBtn" type="button">
+    <span>Advanced Options</span>
+    <span class="chev">▾</span>
+  </button>
+
+  <div class="advanced" id="advPanel">
+    <div class="card">
+      <div class="card-title">Edge Cases & Penalties</div>
+
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">International sale</div>
+          <div class="switch-sub">+1.65% on total sale</div>
+        </div>
+        <div class="switch" id="swIntl"></div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">High INAD return rate</div>
+          <div class="switch-sub">+5% category penalty</div>
+        </div>
+        <div class="switch" id="swInad"></div>
+      </div>
+
+      <div class="field" style="margin-top: 14px;">
+        <label class="field-label">
+          <span>High-value tier reduction</span>
+          <span class="field-hint">e.g. books drop to 2.35% above $7,500</span>
+        </label>
+        <div style="display: flex; gap: 8px;">
+          <div class="input-wrap" style="flex: 1;">
+            <span class="input-prefix">$</span>
+            <input type="number" id="hvThreshold" placeholder="threshold" step="1" min="0" inputmode="decimal" style="padding-left: 28px;">
+          </div>
+          <div class="input-wrap" style="flex: 1;">
+            <span class="input-prefix">%</span>
+            <input type="number" id="hvRate" placeholder="rate above" step="0.1" min="0" inputmode="decimal" style="padding-left: 28px;">
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom: 0;">
+        <label class="field-label">
+          <span>Custom category rate</span>
+          <span class="field-hint">overrides selected category</span>
+        </label>
+        <div class="input-wrap">
+          <span class="input-prefix">%</span>
+          <input type="number" id="customRate" placeholder="leave blank to use category rate" step="0.01" min="0" max="30" inputmode="decimal">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card">
+    <div class="profit-row">
+      <span class="profit-label">Net Profit</span>
+      <span class="profit-margin" id="margin">— margin</span>
+    </div>
+    <div class="profit-value neutral" id="profit">$0.00</div>
+
+    <div class="breakdown">
+      <div class="breakdown-row income">
+        <span class="breakdown-label">Buyer Pays</span>
+        <span class="breakdown-value" id="totalSale">$0.00</span>
+      </div>
+
+      <div class="breakdown-row" id="taxRow" style="display:none;">
+        <span class="breakdown-label" style="color: var(--text-faint);">Sales tax (passes through to state)</span>
+        <span class="breakdown-value" id="taxOut" style="color: var(--text-faint);">$0.00</span>
+      </div>
+
+      <div class="breakdown-row fee">
+        <span class="breakdown-label">eBay Final Value Fee</span>
+        <span class="breakdown-value" id="fvfTotal">−$0.00</span>
+      </div>
+      <div class="breakdown-detail" id="fvfDetail">—</div>
+
+      <div class="breakdown-row fee" id="promoRow" style="display:none;">
+        <span class="breakdown-label">Promoted Listing Fee</span>
+        <span class="breakdown-value" id="promoFee">−$0.00</span>
+      </div>
+
+      <div class="breakdown-row fee" id="intlRow" style="display:none;">
+        <span class="breakdown-label">International Fee (1.65%)</span>
+        <span class="breakdown-value" id="intlFee">−$0.00</span>
+      </div>
+
+      <div class="breakdown-row fee" id="inadRow" style="display:none;">
+        <span class="breakdown-label">High INAD Penalty (5%)</span>
+        <span class="breakdown-value" id="inadFee">−$0.00</span>
+      </div>
+
+      <div class="breakdown-row cost">
+        <span class="breakdown-label">Cost of Goods</span>
+        <span class="breakdown-value" id="cogsOut">−$0.00</span>
+      </div>
+
+      <div class="breakdown-row cost">
+        <span class="breakdown-label">Shipping (your cost)</span>
+        <span class="breakdown-value" id="shipOut">−$0.00</span>
+      </div>
+
+      <div class="breakdown-row cost" id="otherRow" style="display:none;">
+        <span class="breakdown-label">Other Costs</span>
+        <span class="breakdown-value" id="otherOut">−$0.00</span>
+      </div>
+    </div>
+
+    <div class="meter">
+      <div class="meter-header">
+        <span>Effective Fee Rate</span>
+        <span class="meter-value" id="effRate">0.0%</span>
+      </div>
+      <div class="meter-bar">
+        <div class="meter-fill" id="meterFill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Rates as of 2026 · Always verify current rates at ebay.com/sellerfees<br>
+    <span style="opacity:0.6">Add to home screen on iPhone or Android to use as an app</span>
+  </div>
+</div>
+
+<script>
+  // eBay fee data — rates verified against multiple 2026 sources
+  // Format: name, rateNoStore, rateStore, perOrder (auto-calculated), notes
+  const CATEGORIES = [
+    { id: 'most',         name: 'Most Categories (default)',         no: 13.6,  store: 12.7 },
+    { id: 'electronics',  name: 'Consumer Electronics',              no: 13.6,  store: 12.7 },
+    { id: 'computers',    name: 'Computers, Tablets & Networking',   no: 13.6,  store: 12.7 },
+    { id: 'cellphones',   name: 'Cell Phones & Accessories',         no: 13.6,  store: 12.7 },
+    { id: 'cameras',      name: 'Cameras & Photo',                   no: 13.6,  store: 12.7 },
+    { id: 'videogames',   name: 'Video Games & Consoles',            no: 13.6,  store: 12.7 },
+    { id: 'home',         name: 'Home & Garden',                     no: 13.6,  store: 12.7 },
+    { id: 'tools',        name: 'Home Improvement / Tools',          no: 13.6,  store: 12.7 },
+    { id: 'sporting',     name: 'Sporting Goods',                    no: 13.6,  store: 12.7 },
+    { id: 'toys',         name: 'Toys & Hobbies',                    no: 13.6,  store: 12.7 },
+    { id: 'crafts',       name: 'Crafts',                            no: 13.6,  store: 12.7 },
+    { id: 'pet',          name: 'Pet Supplies',                      no: 13.6,  store: 12.7 },
+    { id: 'baby',         name: 'Baby',                              no: 13.6,  store: 12.7 },
+    { id: 'health',       name: 'Health & Beauty',                   no: 13.6,  store: 12.7 },
+    { id: 'business',     name: 'Business & Industrial',             no: 13.6,  store: 12.7 },
+    { id: 'collectibles', name: 'Collectibles',                      no: 13.6,  store: 12.7 },
+    { id: 'antiques',     name: 'Antiques',                          no: 13.6,  store: 12.7 },
+    { id: 'art',          name: 'Art',                               no: 13.6,  store: 12.7 },
+    { id: 'pottery',      name: 'Pottery & Glass',                   no: 13.6,  store: 12.7 },
+    { id: 'sportscards',  name: 'Sports Trading Cards (single)',     no: 13.25, store: 12.35 },
+    { id: 'tcg',          name: 'Trading Card Games',                no: 13.25, store: 12.35 },
+    { id: 'coins',        name: 'Coins & Paper Money',               no: 13.25, store: 12.35 },
+    { id: 'stamps',       name: 'Stamps',                            no: 13.25, store: 12.35 },
+    { id: 'clothing',     name: 'Clothing, Shoes & Accessories',     no: 13.6,  store: 12.7 },
+    { id: 'jewelry',      name: 'Jewelry & Watches',                 no: 15.0,  store: 14.0 },
+    { id: 'finejewelry',  name: 'Fine Jewelry',                      no: 15.0,  store: 14.0 },
+    { id: 'sneakers150',  name: 'Sneakers $150+ (Authenticity Guarantee)', no: 8.0, store: 8.0, noPerOrder: true },
+    { id: 'sneakersUnder',name: 'Sneakers under $150',               no: 13.6,  store: 12.7 },
+    { id: 'watchesAG',    name: 'Watches $2,000+ (Authenticity Guarantee)', no: 8.0, store: 8.0 },
+    { id: 'handbagsAG',   name: 'Handbags $500+ (Authenticity Guarantee)', no: 13.0, store: 12.0 },
+    { id: 'guitars',      name: 'Guitars & Basses',                  no: 6.7,   store: 6.35 },
+    { id: 'musical',      name: 'Other Musical Instruments & Gear',  no: 6.7,   store: 6.35 },
+    { id: 'books',        name: 'Books, Magazines, Movies & Music',  no: 15.3,  store: 14.55 },
+    { id: 'dvds',         name: 'DVDs & Movies',                     no: 15.3,  store: 14.55 },
+    { id: 'heavy',        name: 'Heavy Equipment',                   no: 3.0,   store: 3.0,   cap: 350 },
+    { id: 'partsAcc',     name: 'Parts & Accessories (Motors)',      no: 13.6,  store: 12.7 },
+    { id: 'menswomens',   name: 'Men\'s/Women\'s Bags & Accessories', no: 13.6,  store: 12.7 },
+  ];
+
+  // Per-order fee: $0.30 if total ≤ $10, else $0.40 (athletic shoes $150+ exempt)
+  function perOrderFee(total, cat) {
+    if (cat.noPerOrder) return 0;
+    if (total <= 0) return 0;
+    return total <= 10 ? 0.30 : 0.40;
+  }
+
+  // State
+  let state = {
+    salePrice: 0,
+    shipCharged: 0,
+    shipCost: 0,
+    salesTax: 0,
+    cogs: 0,
+    promoRate: 0,
+    otherCost: 0,
+    catId: 'most',
+    hasStore: false,
+    sellerStatus: 'above', // 'below' | 'above' | 'top'
+    trsPlus: false,        // listing-level TRS Plus discount (only when status = 'top')
+    chargeFvfOnTax: false,
+    isInternational: false,
+    highInad: false,
+    hvThreshold: 0,
+    hvRate: 0,
+    customRate: 0,
+  };
+
+  // Populate categories
+  const catSelect = document.getElementById('category');
+  CATEGORIES.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    catSelect.appendChild(opt);
+  });
+
+  // Helpers
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + (Math.round(n * 100) / 100).toFixed(2);
+  const fmtNeg = n => n > 0 ? '−$' + (Math.round(n * 100) / 100).toFixed(2) : '$0.00';
+
+  function getCat() { return CATEGORIES.find(c => c.id === state.catId) || CATEGORIES[0]; }
+
+  function getRate() {
+    const c = getCat();
+    // Custom rate override
+    if (state.customRate > 0) {
+      let rate = state.customRate;
+      if (state.sellerStatus === 'top' && state.trsPlus) rate = rate * 0.9;
+      return rate;
+    }
+    let rate = state.hasStore ? c.store : c.no;
+    // TRS Plus discount: 10% off the % portion — only valid when Top Rated seller AND TRS Plus listing
+    if (state.sellerStatus === 'top' && state.trsPlus) rate = rate * 0.9;
+    return rate;
+  }
+
+  function calculate() {
+    const cat = getCat();
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax; // what buyer actually pays
+    const fvfBase = state.chargeFvfOnTax ? itemPlusShip + state.salesTax : itemPlusShip;
+    const rate = getRate();
+
+    // Final value fee — tiered if HV threshold/rate set
+    let fvfPercent;
+    if (state.hvThreshold > 0 && state.hvRate > 0 && fvfBase > state.hvThreshold) {
+      // First portion at standard rate, excess at reduced rate
+      const lower = state.hvThreshold * (rate / 100);
+      const upper = (fvfBase - state.hvThreshold) * (state.hvRate / 100);
+      fvfPercent = lower + upper;
+    } else {
+      fvfPercent = fvfBase * (rate / 100);
+    }
+    // Heavy Equipment cap example
+    if (cat.cap) fvfPercent = Math.min(fvfPercent, cat.cap);
+    const perOrder = perOrderFee(fvfBase, cat);
+
+    // Below Standard penalty: +6% of FVF base, on top of normal FVF
+    const belowStandardPenalty = state.sellerStatus === 'below' ? fvfBase * 0.06 : 0;
+
+    // High INAD penalty: +5% of FVF base (only if NOT below standard — eBay docs note only one applies)
+    const inadPenalty = (state.highInad && state.sellerStatus !== 'below') ? fvfBase * 0.05 : 0;
+
+    const fvf = fvfPercent + perOrder + belowStandardPenalty + inadPenalty;
+
+    // Promoted Listing fee — % of item + shipping (NOT tax)
+    const promoFee = itemPlusShip * (state.promoRate / 100);
+
+    // International fee: 1.65% of total sale (item + shipping + tax)
+    const intlFee = state.isInternational ? buyerTotal * 0.0165 : 0;
+
+    // Profit — tax does NOT count as seller income (eBay remits to state)
+    const sellerRevenue = itemPlusShip; // tax bypasses seller
+    const totalCosts = state.cogs + state.shipCost + state.otherCost;
+    const profit = sellerRevenue - fvf - promoFee - intlFee - totalCosts;
+    const margin = sellerRevenue > 0 ? (profit / sellerRevenue) * 100 : 0;
+
+    // Effective fee rate (eBay take vs. seller revenue)
+    const effRate = sellerRevenue > 0 ? ((fvf + promoFee + intlFee) / sellerRevenue) * 100 : 0;
+
+    // Render
+    $('catRate').textContent = `${rate.toFixed(2)}% rate`;
+    $('totalSale').textContent = fmt(buyerTotal);
+    $('fvfTotal').textContent = fmtNeg(fvf);
+
+    // Build FVF detail string
+    let detailParts = [];
+    if (fvfBase > 0) {
+      if (state.hvThreshold > 0 && state.hvRate > 0 && fvfBase > state.hvThreshold) {
+        detailParts.push(`${rate.toFixed(2)}% × ${fmt(state.hvThreshold)} + ${state.hvRate.toFixed(2)}% × ${fmt(fvfBase - state.hvThreshold)}`);
+      } else {
+        detailParts.push(`${rate.toFixed(2)}% × ${fmt(fvfBase)}`);
+      }
+      if (perOrder > 0) detailParts.push(`+ ${fmt(perOrder)} per-order`);
+      if (belowStandardPenalty > 0) detailParts.push(`+ ${fmt(belowStandardPenalty)} below-std penalty`);
+      if (inadPenalty > 0) detailParts.push(`+ ${fmt(inadPenalty)} INAD penalty`);
+    }
+    $('fvfDetail').textContent = detailParts.length ? detailParts.join(' ') : '—';
+
+    // Status hint
+    if (state.sellerStatus === 'below') {
+      $('statusHint').textContent = '+6% penalty on FVF';
+    } else if (state.sellerStatus === 'top') {
+      $('statusHint').textContent = state.trsPlus ? '−10% off rate (TRS Plus)' : 'Top Rated · no discount yet';
+    } else {
+      $('statusHint').textContent = 'no fee adjustment';
+    }
+
+    // Show/hide TRS Plus field based on status
+    $('trsPlusField').style.display = state.sellerStatus === 'top' ? 'block' : 'none';
+
+    $('cogsOut').textContent = fmtNeg(state.cogs);
+    $('shipOut').textContent = fmtNeg(state.shipCost);
+
+    if (state.salesTax > 0) {
+      $('taxRow').style.display = 'flex';
+      $('taxOut').textContent = fmt(state.salesTax);
+      $('taxHint').textContent = state.chargeFvfOnTax
+        ? `+${fmt(state.salesTax * rate / 100)} extra FVF`
+        : 'collected by eBay · remitted to state';
+    } else {
+      $('taxRow').style.display = 'none';
+      $('taxHint').textContent = state.chargeFvfOnTax
+        ? 'FVF will be charged on tax'
+        : 'collected by eBay · remitted to state';
+    }
+
+    if (state.otherCost > 0) {
+      $('otherRow').style.display = 'flex';
+      $('otherOut').textContent = fmtNeg(state.otherCost);
+    } else {
+      $('otherRow').style.display = 'none';
+    }
+
+    if (promoFee > 0) {
+      $('promoRow').style.display = 'flex';
+      $('promoFee').textContent = fmtNeg(promoFee);
+      $('promoHint').textContent = `${fmt(promoFee)} extra fee`;
+    } else {
+      $('promoRow').style.display = 'none';
+      $('promoHint').textContent = '0%';
+    }
+
+    if (intlFee > 0) {
+      $('intlRow').style.display = 'flex';
+      $('intlFee').textContent = fmtNeg(intlFee);
+    } else {
+      $('intlRow').style.display = 'none';
+    }
+
+    if (inadPenalty > 0) {
+      $('inadRow').style.display = 'flex';
+      $('inadFee').textContent = fmtNeg(inadPenalty);
+    } else {
+      $('inadRow').style.display = 'none';
+    }
+
+    const profitEl = $('profit');
+    profitEl.textContent = (profit < 0 ? '−$' : '$') + Math.abs(profit).toFixed(2);
+    profitEl.className = 'profit-value ' + (
+      profit > 0.005 ? 'positive' :
+      profit < -0.005 ? 'negative' : 'neutral'
+    );
+
+    $('margin').textContent = sellerRevenue > 0
+      ? `${margin >= 0 ? '+' : ''}${margin.toFixed(1)}% margin`
+      : '— margin';
+
+    $('effRate').textContent = effRate.toFixed(1) + '%';
+    $('meterFill').style.width = Math.min(100, effRate * 4) + '%'; // 25% = full bar
+  }
+
+  // Wire inputs
+  ['salePrice','shipCharged','shipCost','salesTax','cogs','promoRate','otherCost','hvThreshold','hvRate','customRate'].forEach(id => {
+    $(id).addEventListener('input', e => {
+      state[id] = parseFloat(e.target.value) || 0;
+      calculate();
+    });
+  });
+
+  // Advanced section accordion
+  const advBtn = $('advBtn');
+  const advPanel = $('advPanel');
+  advBtn.addEventListener('click', () => {
+    advBtn.classList.toggle('open');
+    advPanel.classList.toggle('open');
+  });
+
+  // Advanced switches (international, INAD)
+  $('swIntl').addEventListener('click', () => {
+    $('swIntl').classList.toggle('on');
+    state.isInternational = $('swIntl').classList.contains('on');
+    calculate();
+  });
+  $('swInad').addEventListener('click', () => {
+    $('swInad').classList.toggle('on');
+    state.highInad = $('swInad').classList.contains('on');
+    calculate();
+  });
+
+  catSelect.addEventListener('change', e => {
+    state.catId = e.target.value;
+    calculate();
+  });
+
+  document.querySelectorAll('.toggle[data-store]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toggle[data-store]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.hasStore = btn.dataset.store === 'true';
+      calculate();
+    });
+  });
+
+  document.querySelectorAll('.toggle[data-status]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toggle[data-status]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.sellerStatus = btn.dataset.status;
+      // Reset TRS Plus when leaving Top Rated tier
+      if (state.sellerStatus !== 'top') {
+        state.trsPlus = false;
+        document.querySelectorAll('.badge-toggle[data-trsplus]').forEach(b => b.classList.remove('active'));
+        const stdBtn = document.querySelector('.badge-toggle[data-trsplus="false"]');
+        if (stdBtn) stdBtn.classList.add('active');
+      }
+      calculate();
+    });
+  });
+
+  document.querySelectorAll('.badge-toggle[data-trsplus]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.badge-toggle[data-trsplus]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.trsPlus = btn.dataset.trsplus === 'true';
+      calculate();
+    });
+  });
+
+  document.querySelectorAll('.toggle[data-taxfvf]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toggle[data-taxfvf]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.chargeFvfOnTax = btn.dataset.taxfvf === 'true';
+      calculate();
+    });
+  });
+
+  // Initial render
+  calculate();
+</script>
+</body>
+</html>
