@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FlippinFees">
-<title>FlippinFees — eBay Fee & Profit Calculator</title>
+<title>FlippinFees — Multi-Platform Reseller Fee Calculator</title>
 <link rel="manifest" href='data:application/manifest+json,{"name":"FlippinFees","short_name":"FlippinFees","start_url":".","display":"standalone","background_color":"#0a0e1a","theme_color":"#0a0e1a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%230a0e1a%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
 <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%230a0e1a%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>'>
 <style>
@@ -23,7 +23,6 @@
     --accent: #00d97a;
     --accent-dim: #00a85e;
     --warn: #ff5b5b;
-    --warn-dim: #c93a3a;
     --gold: #f5b942;
   }
 
@@ -33,7 +32,6 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-feature-settings: 'ss01', 'cv11';
     min-height: 100vh;
     overscroll-behavior: none;
   }
@@ -58,7 +56,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     padding: 4px 4px;
   }
   .logo {
@@ -83,6 +81,70 @@
     line-height: 1.4;
   }
   .header-meta b { color: var(--accent); font-weight: 600; }
+
+  /* Intro */
+  .intro {
+    text-align: center;
+    padding: 12px 8px 18px;
+    margin-bottom: 14px;
+  }
+  .intro h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .intro h1 em { font-style: normal; color: var(--accent); }
+  .intro p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  /* Platform tabs — horizontal scroll */
+  .tabs-wrap {
+    margin: 0 -16px 16px;
+    padding: 0 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabs-wrap::-webkit-scrollbar { display: none; }
+  .tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+  .tab {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab:hover { border-color: var(--border-bright); color: var(--text); }
+  .tab.active {
+    background: rgba(0, 217, 122, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tab-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-faint);
+  }
+  .tab.active .tab-dot { background: var(--accent); }
 
   /* Card */
   .card {
@@ -158,12 +220,8 @@
   input::placeholder { color: var(--text-faint); }
   input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-  /* Toggles */
-  .toggle-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+  /* Toggle row (segmented) */
+  .toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .toggle {
     flex: 1;
     min-width: 0;
@@ -191,6 +249,25 @@
   }
   .toggle.active[data-status="above"] {
     background: rgba(245, 185, 66, 0.10);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .badge-row { display: flex; gap: 8px; margin-top: 8px; }
+  .badge-toggle {
+    flex: 1;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    font-weight: 600;
+  }
+  .badge-toggle.active {
+    background: rgba(245, 185, 66, 0.1);
     border-color: var(--gold);
     color: var(--gold);
   }
@@ -255,12 +332,7 @@
     align-items: center;
     font-size: 14px;
   }
-  .breakdown-label {
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .breakdown-label { color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
   .breakdown-label::before {
     content: '';
     width: 6px; height: 6px;
@@ -270,14 +342,9 @@
   .breakdown-row.fee .breakdown-label::before { background: var(--warn); }
   .breakdown-row.cost .breakdown-label::before { background: var(--gold); }
   .breakdown-row.income .breakdown-label::before { background: var(--accent); }
-  .breakdown-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    color: var(--text);
-  }
+  .breakdown-value { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text); }
   .breakdown-row.fee .breakdown-value { color: var(--warn); }
   .breakdown-row.income .breakdown-value { color: var(--accent); }
-
   .breakdown-detail {
     font-size: 11px;
     color: var(--text-faint);
@@ -286,11 +353,7 @@
   }
 
   /* Effective fee meter */
-  .meter {
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
+  .meter { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
   .meter-header {
     display: flex;
     justify-content: space-between;
@@ -301,16 +364,12 @@
     font-weight: 600;
     margin-bottom: 8px;
   }
-  .meter-value {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--warn);
-  }
+  .meter-value { font-family: 'JetBrains Mono', monospace; color: var(--warn); }
   .meter-bar {
     height: 6px;
     background: var(--bg);
     border-radius: 3px;
     overflow: hidden;
-    position: relative;
   }
   .meter-fill {
     height: 100%;
@@ -319,117 +378,7 @@
     border-radius: 3px;
   }
 
-  /* Footer */
-  .footer {
-    text-align: center;
-    margin-top: 24px;
-    font-size: 11px;
-    color: var(--text-faint);
-    line-height: 1.6;
-  }
-  .footer a { color: var(--text-dim); text-decoration: none; }
-
-  /* Subtle reveal */
-  .card, .result-card {
-    animation: fadeUp 0.4s ease both;
-  }
-  .card:nth-child(2) { animation-delay: 0.05s; }
-  .card:nth-child(3) { animation-delay: 0.1s; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Top Rated badge */
-  .badge-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  .badge-toggle {
-    flex: 1;
-    background: var(--bg-elev-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px;
-    font-size: 12px;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-    font-weight: 600;
-  }
-  .badge-toggle.active {
-    background: rgba(245, 185, 66, 0.1);
-    border-color: var(--gold);
-    color: var(--gold);
-  }
-
-  /* Improved logo mark — coin/dollar */
-  .logo-mark {
-    position: relative;
-    overflow: hidden;
-  }
-  .logo-mark::after {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border-radius: 7px;
-    border: 1.5px solid rgba(10, 14, 26, 0.25);
-    pointer-events: none;
-  }
-
-  /* Landing intro */
-  .intro {
-    background: linear-gradient(140deg, rgba(0, 217, 122, 0.06) 0%, rgba(0, 217, 122, 0) 60%);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 22px 20px;
-    margin-bottom: 14px;
-    text-align: center;
-  }
-  .intro h1 {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.15;
-    margin-bottom: 10px;
-  }
-  .intro h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-  .intro p {
-    font-size: 14px;
-    color: var(--text-dim);
-    line-height: 1.55;
-    max-width: 360px;
-    margin: 0 auto;
-  }
-  .intro-feats {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .intro-feat {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-faint);
-    font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .intro-feat::before {
-    content: '✓';
-    color: var(--accent);
-    font-weight: 900;
-  }
-
-  /* Advanced section accordion */
+  /* Advanced accordion */
   .advanced-toggle {
     width: 100%;
     background: transparent;
@@ -458,7 +407,7 @@
   .advanced { display: none; }
   .advanced.open { display: block; animation: fadeUp 0.25s ease; }
 
-  /* Checkbox-style toggle for boolean advanced options */
+  /* Switch */
   .switch-row {
     display: flex;
     align-items: center;
@@ -467,11 +416,7 @@
     border-bottom: 1px solid var(--border);
   }
   .switch-row:last-child { border-bottom: none; }
-  .switch-label {
-    font-size: 14px;
-    color: var(--text);
-    font-weight: 500;
-  }
+  .switch-label { font-size: 14px; color: var(--text); font-weight: 500; }
   .switch-sub {
     font-size: 11px;
     color: var(--text-faint);
@@ -502,6 +447,25 @@
   }
   .switch.on { background: rgba(0, 217, 122, 0.2); border-color: var(--accent); }
   .switch.on::after { left: 20px; background: var(--accent); }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.6;
+  }
+
+  /* Animations */
+  .card, .result-card { animation: fadeUp 0.4s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Hidden by default — JS toggles */
+  .hide { display: none !important; }
 </style>
 </head>
 <body>
@@ -517,25 +481,32 @@
       <div class="logo-text">Flippin<span>Fees</span></div>
     </div>
     <div class="header-meta">
-      eBay Fee Calculator<br>
+      Reseller Fee Calculator<br>
       <b>2026 rates</b>
     </div>
   </header>
 
-  <!-- INTRO -->
   <div class="intro">
     <h1>Know your <em>real</em> profit<br>before you list.</h1>
-    <p>Fast, accurate eBay fee math for every category — including final value fees, per-order fees, promoted listings, and seller status penalties.</p>
-    <div class="intro-feats">
-      <span class="intro-feat">36+ categories</span>
-      <span class="intro-feat">2026 rates</span>
-      <span class="intro-feat">no signup</span>
+    <p>Accurate fee math for 7 major reselling platforms — pick yours, enter the numbers, see what you keep.</p>
+  </div>
+
+  <!-- PLATFORM TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-platform="ebay"><span class="tab-dot"></span>eBay</button>
+      <button class="tab" data-platform="etsy"><span class="tab-dot"></span>Etsy</button>
+      <button class="tab" data-platform="whatnot"><span class="tab-dot"></span>Whatnot</button>
+      <button class="tab" data-platform="mercari"><span class="tab-dot"></span>Mercari</button>
+      <button class="tab" data-platform="poshmark"><span class="tab-dot"></span>Poshmark</button>
+      <button class="tab" data-platform="depop"><span class="tab-dot"></span>Depop</button>
+      <button class="tab" data-platform="facebook"><span class="tab-dot"></span>Facebook</button>
     </div>
   </div>
 
   <!-- LISTING DETAILS -->
   <div class="card">
-    <div class="card-title">Listing Details</div>
+    <div class="card-title" id="listingTitle">Listing Details</div>
 
     <div class="field">
       <label class="field-label">
@@ -548,7 +519,8 @@
       </div>
     </div>
 
-    <div class="field">
+    <!-- Category — eBay, Whatnot only -->
+    <div class="field" id="categoryField">
       <label class="field-label">
         <span>Category</span>
         <span class="field-hint" id="catRate">—</span>
@@ -556,40 +528,52 @@
       <select id="category"></select>
     </div>
 
-    <div class="field" style="margin-bottom: 4px;">
-      <label class="field-label"><span>Store Subscription</span></label>
-      <div class="toggle-row">
-        <button class="toggle active" data-store="false">No Store / Starter</button>
-        <button class="toggle" data-store="true">Basic Store +</button>
+    <!-- eBay-specific: Store + Seller status -->
+    <div id="ebayStoreField">
+      <div class="field" style="margin-bottom: 4px;">
+        <label class="field-label"><span>Store Subscription</span></label>
+        <div class="toggle-row">
+          <button class="toggle active" data-store="false">No Store / Starter</button>
+          <button class="toggle" data-store="true">Basic Store +</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 14px; margin-bottom: 4px;">
+        <label class="field-label">
+          <span>Seller Performance Status</span>
+          <span class="field-hint" id="statusHint">no fee adjustment</span>
+        </label>
+        <div class="toggle-row">
+          <button class="toggle" data-status="below">Below Standard</button>
+          <button class="toggle active" data-status="above">Above Standard</button>
+          <button class="toggle" data-status="top">Top Rated</button>
+        </div>
+      </div>
+
+      <div class="field" id="trsPlusField" style="margin-top: 14px; display: none;">
+        <label class="field-label">
+          <span>Top Rated Plus listing?</span>
+          <span class="field-hint">1-day handling + 30-day free returns</span>
+        </label>
+        <div class="badge-row">
+          <button class="badge-toggle active" data-trsplus="false">Standard Listing</button>
+          <button class="badge-toggle" data-trsplus="true">TRS Plus −10%</button>
+        </div>
       </div>
     </div>
 
-    <div class="field" style="margin-top: 14px; margin-bottom: 4px;">
-      <label class="field-label">
-        <span>Seller Performance Status</span>
-        <span class="field-hint" id="statusHint">no fee adjustment</span>
-      </label>
+    <!-- Facebook: shipped vs local -->
+    <div class="field hide" id="fbModeField" style="margin-bottom: 0;">
+      <label class="field-label"><span>Sale Type</span></label>
       <div class="toggle-row">
-        <button class="toggle" data-status="below">Below Standard</button>
-        <button class="toggle active" data-status="above">Above Standard</button>
-        <button class="toggle" data-status="top">Top Rated</button>
-      </div>
-    </div>
-
-    <div class="field" id="trsPlusField" style="margin-top: 14px; display: none;">
-      <label class="field-label">
-        <span>Top Rated Plus listing?</span>
-        <span class="field-hint">1-day handling + 30-day free returns</span>
-      </label>
-      <div class="badge-row">
-        <button class="badge-toggle active" data-trsplus="false">Standard Listing</button>
-        <button class="badge-toggle" data-trsplus="true">TRS Plus −10%</button>
+        <button class="toggle active" data-fbmode="shipped">Shipped (10% fee)</button>
+        <button class="toggle" data-fbmode="local">Local Pickup (free)</button>
       </div>
     </div>
   </div>
 
   <!-- SHIPPING & TAX -->
-  <div class="card">
+  <div class="card" id="shippingCard">
     <div class="card-title">Shipping & Tax</div>
 
     <div class="field">
@@ -614,10 +598,10 @@
       </div>
     </div>
 
-    <div class="field">
+    <div class="field" id="taxField">
       <label class="field-label">
         <span>Sales Tax (paid by buyer)</span>
-        <span class="field-hint" id="taxHint">collected by eBay · remitted to state</span>
+        <span class="field-hint" id="taxHint">collected by platform · remitted to state</span>
       </label>
       <div class="input-wrap">
         <span class="input-prefix">$</span>
@@ -625,7 +609,8 @@
       </div>
     </div>
 
-    <div class="field" style="margin-bottom: 0;">
+    <!-- eBay only: charge FVF on tax toggle -->
+    <div class="field" id="ebayTaxFvfField" style="margin-bottom: 0;">
       <label class="field-label"><span>Charge FVF on tax?</span></label>
       <div class="toggle-row">
         <button class="toggle active" data-taxfvf="false">No (typical)</button>
@@ -649,9 +634,10 @@
       </div>
     </div>
 
-    <div class="field">
+    <!-- Promoted listings — eBay, Etsy -->
+    <div class="field" id="promoField">
       <label class="field-label">
-        <span>Promoted Listing Ad Rate</span>
+        <span id="promoLabel">Promoted Listing Ad Rate</span>
         <span class="field-hint" id="promoHint">0%</span>
       </label>
       <div class="input-wrap">
@@ -672,7 +658,7 @@
     </div>
   </div>
 
-  <!-- ADVANCED OPTIONS -->
+  <!-- ADVANCED OPTIONS — eBay only for now -->
   <button class="advanced-toggle" id="advBtn" type="button">
     <span>Advanced Options</span>
     <span class="chev">▾</span>
@@ -682,26 +668,26 @@
     <div class="card">
       <div class="card-title">Edge Cases & Penalties</div>
 
-      <div class="switch-row">
+      <div class="switch-row" id="intlSwitchRow">
         <div>
           <div class="switch-label">International sale</div>
-          <div class="switch-sub">+1.65% on total sale</div>
+          <div class="switch-sub" id="intlSubLabel">+1.65% on total sale</div>
         </div>
         <div class="switch" id="swIntl"></div>
       </div>
 
-      <div class="switch-row">
+      <div class="switch-row" id="inadSwitchRow">
         <div>
           <div class="switch-label">High INAD return rate</div>
-          <div class="switch-sub">+5% category penalty</div>
+          <div class="switch-sub">+5% category penalty (eBay)</div>
         </div>
         <div class="switch" id="swInad"></div>
       </div>
 
-      <div class="field" style="margin-top: 14px;">
+      <div class="field" style="margin-top: 14px;" id="hvField">
         <label class="field-label">
           <span>High-value tier reduction</span>
-          <span class="field-hint">e.g. books drop to 2.35% above $7,500</span>
+          <span class="field-hint">e.g. eBay books drop above $7,500</span>
         </label>
         <div style="display: flex; gap: 8px;">
           <div class="input-wrap" style="flex: 1;">
@@ -715,14 +701,14 @@
         </div>
       </div>
 
-      <div class="field" style="margin-bottom: 0;">
+      <div class="field" style="margin-bottom: 0;" id="customRateField">
         <label class="field-label">
-          <span>Custom category rate</span>
-          <span class="field-hint">overrides selected category</span>
+          <span>Custom rate override</span>
+          <span class="field-hint">overrides platform rate</span>
         </label>
         <div class="input-wrap">
           <span class="input-prefix">%</span>
-          <input type="number" id="customRate" placeholder="leave blank to use category rate" step="0.01" min="0" max="30" inputmode="decimal">
+          <input type="number" id="customRate" placeholder="leave blank to use default" step="0.01" min="0" max="30" inputmode="decimal">
         </div>
       </div>
     </div>
@@ -743,29 +729,41 @@
       </div>
 
       <div class="breakdown-row" id="taxRow" style="display:none;">
-        <span class="breakdown-label" style="color: var(--text-faint);">Sales tax (passes through to state)</span>
+        <span class="breakdown-label" style="color: var(--text-faint);">Sales tax (passes through)</span>
         <span class="breakdown-value" id="taxOut" style="color: var(--text-faint);">$0.00</span>
       </div>
 
-      <div class="breakdown-row fee">
-        <span class="breakdown-label">eBay Final Value Fee</span>
-        <span class="breakdown-value" id="fvfTotal">−$0.00</span>
+      <!-- Generic platform fees — re-labeled per platform -->
+      <div class="breakdown-row fee" id="commissionRow">
+        <span class="breakdown-label" id="commissionLabel">Platform Fee</span>
+        <span class="breakdown-value" id="commissionOut">−$0.00</span>
       </div>
-      <div class="breakdown-detail" id="fvfDetail">—</div>
+      <div class="breakdown-detail" id="commissionDetail">—</div>
+
+      <div class="breakdown-row fee" id="processingRow" style="display:none;">
+        <span class="breakdown-label" id="processingLabel">Payment Processing</span>
+        <span class="breakdown-value" id="processingOut">−$0.00</span>
+      </div>
+      <div class="breakdown-detail" id="processingDetail" style="display:none;">—</div>
+
+      <div class="breakdown-row fee" id="listingFeeRow" style="display:none;">
+        <span class="breakdown-label">Listing Fee</span>
+        <span class="breakdown-value" id="listingFeeOut">−$0.00</span>
+      </div>
 
       <div class="breakdown-row fee" id="promoRow" style="display:none;">
         <span class="breakdown-label">Promoted Listing Fee</span>
-        <span class="breakdown-value" id="promoFee">−$0.00</span>
+        <span class="breakdown-value" id="promoFeeOut">−$0.00</span>
       </div>
 
       <div class="breakdown-row fee" id="intlRow" style="display:none;">
-        <span class="breakdown-label">International Fee (1.65%)</span>
-        <span class="breakdown-value" id="intlFee">−$0.00</span>
+        <span class="breakdown-label">International Fee</span>
+        <span class="breakdown-value" id="intlFeeOut">−$0.00</span>
       </div>
 
       <div class="breakdown-row fee" id="inadRow" style="display:none;">
         <span class="breakdown-label">High INAD Penalty (5%)</span>
-        <span class="breakdown-value" id="inadFee">−$0.00</span>
+        <span class="breakdown-value" id="inadFeeOut">−$0.00</span>
       </div>
 
       <div class="breakdown-row cost">
@@ -796,15 +794,19 @@
   </div>
 
   <div class="footer">
-    Rates as of 2026 · Always verify current rates at ebay.com/sellerfees<br>
+    Rates verified for 2026 · Always confirm current rates with the platform<br>
     <span style="opacity:0.6">Add to home screen on iPhone or Android to use as an app</span>
   </div>
 </div>
 
 <script>
-  // eBay fee data — rates verified against multiple 2026 sources
-  // Format: name, rateNoStore, rateStore, perOrder (auto-calculated), notes
-  const CATEGORIES = [
+  /* =====================================================================
+     PLATFORM CONFIGURATIONS
+     Each platform defines how it shows fields and how it computes fees.
+     ===================================================================== */
+
+  // eBay categories — full set with 2026 rates
+  const EBAY_CATEGORIES = [
     { id: 'most',         name: 'Most Categories (default)',         no: 13.6,  store: 12.7 },
     { id: 'electronics',  name: 'Consumer Electronics',              no: 13.6,  store: 12.7 },
     { id: 'computers',    name: 'Computers, Tablets & Networking',   no: 13.6,  store: 12.7 },
@@ -841,18 +843,91 @@
     { id: 'dvds',         name: 'DVDs & Movies',                     no: 15.3,  store: 14.55 },
     { id: 'heavy',        name: 'Heavy Equipment',                   no: 3.0,   store: 3.0,   cap: 350 },
     { id: 'partsAcc',     name: 'Parts & Accessories (Motors)',      no: 13.6,  store: 12.7 },
-    { id: 'menswomens',   name: 'Men\'s/Women\'s Bags & Accessories', no: 13.6,  store: 12.7 },
   ];
 
-  // Per-order fee: $0.30 if total ≤ $10, else $0.40 (athletic shoes $150+ exempt)
-  function perOrderFee(total, cat) {
-    if (cat.noPerOrder) return 0;
-    if (total <= 0) return 0;
-    return total <= 10 ? 0.30 : 0.40;
-  }
+  // Whatnot category-specific commission rates
+  const WHATNOT_CATEGORIES = [
+    { id: 'standard',    name: 'Standard (most categories)', rate: 8.0 },
+    { id: 'electronics', name: 'Electronics',                 rate: 5.0 },
+    { id: 'coins',       name: 'Coins & Money',               rate: 4.0 },
+    { id: 'cards',       name: 'Trading Cards / Collectibles', rate: 8.0 },
+    { id: 'sneakers',    name: 'Sneakers',                    rate: 8.0 },
+    { id: 'apparel',     name: 'Apparel / Vintage',           rate: 8.0 },
+  ];
 
-  // State
+  /* PLATFORM SPECS:
+     Each platform declares which UI sections to show, plus a calc() function
+     that returns { fees: [{label, amount, detail?}], buyerTotal, sellerRevenue, fvfBaseDescription? }
+  */
+  const PLATFORMS = {
+    ebay: {
+      name: 'eBay',
+      categories: EBAY_CATEGORIES,
+      show: { category: true, ebayStore: true, ebayTaxFvf: true, fbMode: false, promo: true, listingFee: false,
+              advanced: true, intl: true, inad: true, hv: true, customRate: true },
+      promoLabel: 'Promoted Listing Ad Rate',
+      categoryLabel: 'Category',
+      taxHint: 'collected by eBay · remitted to state',
+      calc: calcEbay,
+    },
+    etsy: {
+      name: 'Etsy',
+      categories: null,
+      show: { category: false, ebayStore: false, ebayTaxFvf: false, fbMode: false, promo: true, listingFee: true,
+              advanced: false, intl: false, inad: false, hv: false, customRate: false },
+      promoLabel: 'Etsy Ads / Offsite Ads %',
+      taxHint: 'processing fee charged on tax',
+      calc: calcEtsy,
+    },
+    whatnot: {
+      name: 'Whatnot',
+      categories: WHATNOT_CATEGORIES,
+      show: { category: true, ebayStore: false, ebayTaxFvf: false, fbMode: false, promo: false, listingFee: false,
+              advanced: false, intl: false, inad: false, hv: false, customRate: false },
+      promoLabel: '',
+      categoryLabel: 'Category',
+      taxHint: 'processing fee charged on tax',
+      calc: calcWhatnot,
+    },
+    mercari: {
+      name: 'Mercari',
+      categories: null,
+      show: { category: false, ebayStore: false, ebayTaxFvf: false, fbMode: false, promo: false, listingFee: false,
+              advanced: false, intl: false, inad: false, hv: false, customRate: false },
+      taxHint: 'collected by Mercari · remitted to state',
+      calc: calcMercari,
+    },
+    poshmark: {
+      name: 'Poshmark',
+      categories: null,
+      show: { category: false, ebayStore: false, ebayTaxFvf: false, fbMode: false, promo: false, listingFee: false,
+              advanced: false, intl: false, inad: false, hv: false, customRate: false },
+      taxHint: 'collected by Poshmark · remitted to state',
+      calc: calcPoshmark,
+    },
+    depop: {
+      name: 'Depop',
+      categories: null,
+      show: { category: false, ebayStore: false, ebayTaxFvf: false, fbMode: false, promo: false, listingFee: false,
+              advanced: false, intl: false, inad: false, hv: false, customRate: false },
+      taxHint: 'processing fee charged on tax',
+      calc: calcDepop,
+    },
+    facebook: {
+      name: 'Facebook Marketplace',
+      categories: null,
+      show: { category: false, ebayStore: false, ebayTaxFvf: false, fbMode: true, promo: false, listingFee: false,
+              advanced: false, intl: false, inad: false, hv: false, customRate: false },
+      taxHint: 'collected by Facebook · remitted to state',
+      calc: calcFacebook,
+    },
+  };
+
+  /* =====================================================================
+     STATE
+     ===================================================================== */
   let state = {
+    platform: 'ebay',
     salePrice: 0,
     shipCharged: 0,
     shipCost: 0,
@@ -860,139 +935,394 @@
     cogs: 0,
     promoRate: 0,
     otherCost: 0,
-    catId: 'most',
+    // eBay-specific
+    ebayCatId: 'most',
     hasStore: false,
-    sellerStatus: 'above', // 'below' | 'above' | 'top'
-    trsPlus: false,        // listing-level TRS Plus discount (only when status = 'top')
+    sellerStatus: 'above',
+    trsPlus: false,
     chargeFvfOnTax: false,
     isInternational: false,
     highInad: false,
     hvThreshold: 0,
     hvRate: 0,
     customRate: 0,
+    // Whatnot-specific
+    whatnotCatId: 'standard',
+    // Facebook-specific
+    fbMode: 'shipped',
   };
 
-  // Populate categories
-  const catSelect = document.getElementById('category');
-  CATEGORIES.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = c.name;
-    catSelect.appendChild(opt);
-  });
+  /* =====================================================================
+     PLATFORM CALCULATORS
+     Each returns: { feeLines: [...], totalFees: n, sellerRevenue, buyerTotal, summary }
+     ===================================================================== */
 
-  // Helpers
+  function calcEbay() {
+    const cat = EBAY_CATEGORIES.find(c => c.id === state.ebayCatId) || EBAY_CATEGORIES[0];
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+    const fvfBase = state.chargeFvfOnTax ? itemPlusShip + state.salesTax : itemPlusShip;
+
+    // Resolve rate: custom override > category > store discount > TRS Plus discount
+    let rate;
+    if (state.customRate > 0) {
+      rate = state.customRate;
+    } else {
+      rate = state.hasStore ? cat.store : cat.no;
+    }
+    if (state.sellerStatus === 'top' && state.trsPlus) rate = rate * 0.9;
+
+    // FVF percent — tiered if HV configured
+    let fvfPercent;
+    if (state.hvThreshold > 0 && state.hvRate > 0 && fvfBase > state.hvThreshold) {
+      fvfPercent = state.hvThreshold * (rate / 100) + (fvfBase - state.hvThreshold) * (state.hvRate / 100);
+    } else {
+      fvfPercent = fvfBase * (rate / 100);
+    }
+    if (cat.cap) fvfPercent = Math.min(fvfPercent, cat.cap);
+
+    // Per-order fee
+    let perOrder = 0;
+    if (!cat.noPerOrder && fvfBase > 0) perOrder = fvfBase <= 10 ? 0.30 : 0.40;
+
+    // Penalties
+    const belowPenalty = state.sellerStatus === 'below' ? fvfBase * 0.06 : 0;
+    const inadPenalty  = (state.highInad && state.sellerStatus !== 'below') ? fvfBase * 0.05 : 0;
+
+    const fvf = fvfPercent + perOrder + belowPenalty + inadPenalty;
+
+    // Optional fees
+    const promoFee = itemPlusShip * (state.promoRate / 100);
+    const intlFee  = state.isInternational ? buyerTotal * 0.0165 : 0;
+
+    // Build detail string
+    let detail = '';
+    if (fvfBase > 0) {
+      const parts = [];
+      if (state.hvThreshold > 0 && state.hvRate > 0 && fvfBase > state.hvThreshold) {
+        parts.push(`${rate.toFixed(2)}% × ${fmt(state.hvThreshold)} + ${state.hvRate.toFixed(2)}% × ${fmt(fvfBase - state.hvThreshold)}`);
+      } else {
+        parts.push(`${rate.toFixed(2)}% × ${fmt(fvfBase)}`);
+      }
+      if (perOrder > 0) parts.push(`+ ${fmt(perOrder)} per-order`);
+      if (belowPenalty > 0) parts.push(`+ ${fmt(belowPenalty)} below-std`);
+      if (inadPenalty > 0)  parts.push(`+ ${fmt(inadPenalty)} INAD`);
+      detail = parts.join(' ');
+    }
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip, // tax bypasses seller
+      commission: { label: 'eBay Final Value Fee', amount: fvf, detail },
+      processing: null, // included in FVF
+      listingFee: 0,
+      promoFee,
+      intlFee,
+      inadFee: 0, // already counted in commission per eBay's structure (shown in detail)
+      rateForHint: rate,
+    };
+  }
+
+  function calcEtsy() {
+    // Etsy: $0.20 listing + 6.5% transaction fee on (item + shipping) + 3% + $0.25 processing on (item + ship + tax)
+    // Optional: Etsy Ads / Offsite Ads %
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+
+    const listingFee = state.salePrice > 0 ? 0.20 : 0;
+    const transactionFee = itemPlusShip * 0.065;
+    const processingBase = itemPlusShip + state.salesTax; // processing applies to full amount including tax
+    const processingFee = processingBase > 0 ? processingBase * 0.03 + 0.25 : 0;
+
+    // Promo = Etsy Ads / Offsite Ads — applied to total order including tax
+    const promoFee = buyerTotal * (state.promoRate / 100);
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip,
+      commission: {
+        label: 'Etsy Transaction Fee',
+        amount: transactionFee,
+        detail: itemPlusShip > 0 ? `6.50% × ${fmt(itemPlusShip)} (item + shipping)` : '—',
+      },
+      processing: {
+        label: 'Payment Processing',
+        amount: processingFee,
+        detail: processingBase > 0 ? `3% × ${fmt(processingBase)} + $0.25` : '—',
+      },
+      listingFee,
+      promoFee,
+      intlFee: 0,
+      rateForHint: 6.5,
+    };
+  }
+
+  function calcWhatnot() {
+    // Whatnot: category-based commission (4-8%) on item + payment processing 2.9% + $0.30 on total order (item + ship + tax)
+    const cat = WHATNOT_CATEGORIES.find(c => c.id === state.whatnotCatId) || WHATNOT_CATEGORIES[0];
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+
+    // Commission applies to final sale price (item) only per Whatnot docs
+    const commission = state.salePrice * (cat.rate / 100);
+    // Processing on full transaction
+    const processingFee = buyerTotal > 0 ? buyerTotal * 0.029 + 0.30 : 0;
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip,
+      commission: {
+        label: 'Whatnot Commission',
+        amount: commission,
+        detail: state.salePrice > 0 ? `${cat.rate.toFixed(1)}% × ${fmt(state.salePrice)} (item only)` : '—',
+      },
+      processing: {
+        label: 'Payment Processing',
+        amount: processingFee,
+        detail: buyerTotal > 0 ? `2.9% × ${fmt(buyerTotal)} + $0.30` : '—',
+      },
+      listingFee: 0,
+      promoFee: 0,
+      intlFee: 0,
+      rateForHint: cat.rate,
+    };
+  }
+
+  function calcMercari() {
+    // Mercari: flat 10% on item + buyer-paid shipping (processing included). No separate processing fee.
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+    const commission = itemPlusShip * 0.10;
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip,
+      commission: {
+        label: 'Mercari Selling Fee',
+        amount: commission,
+        detail: itemPlusShip > 0 ? `10% × ${fmt(itemPlusShip)} (includes processing)` : '—',
+      },
+      processing: null,
+      listingFee: 0,
+      promoFee: 0,
+      intlFee: 0,
+      rateForHint: 10,
+    };
+  }
+
+  function calcPoshmark() {
+    // Poshmark: $2.95 flat under $15, 20% over $15. Includes processing.
+    // Per Poshmark, fee applies to total sale price (item + shipping, but Poshmark's shipping is buyer-paid flat USPS so we apply to item only)
+    // Most calculators apply 20% to item price only.
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+
+    let commission = 0;
+    let detail = '—';
+    if (state.salePrice >= 15) {
+      commission = state.salePrice * 0.20;
+      detail = `20% × ${fmt(state.salePrice)} (sales $15+)`;
+    } else if (state.salePrice > 0) {
+      commission = 2.95;
+      detail = `$2.95 flat fee (sales under $15)`;
+    }
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip,
+      commission: {
+        label: 'Poshmark Commission',
+        amount: commission,
+        detail,
+      },
+      processing: null,
+      listingFee: 0,
+      promoFee: 0,
+      intlFee: 0,
+      rateForHint: state.salePrice >= 15 ? 20 : 0,
+    };
+  }
+
+  function calcDepop() {
+    // Depop (US/UK): 0% commission, 3.3% + $0.45 processing on (item + buyer-paid shipping)
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+
+    // Processing applies to total transaction the buyer pays
+    const processingFee = buyerTotal > 0 ? buyerTotal * 0.033 + 0.45 : 0;
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip,
+      commission: {
+        label: 'Depop Commission',
+        amount: 0,
+        detail: '0% commission (US/UK sellers)',
+      },
+      processing: {
+        label: 'Payment Processing',
+        amount: processingFee,
+        detail: buyerTotal > 0 ? `3.3% × ${fmt(buyerTotal)} + $0.45` : '—',
+      },
+      listingFee: 0,
+      promoFee: 0,
+      intlFee: 0,
+      rateForHint: 3.3,
+    };
+  }
+
+  function calcFacebook() {
+    // FB Marketplace: shipped = 10% on (item + shipping + tax), $0.80 minimum. Local pickup = 0%.
+    const itemPlusShip = state.salePrice + state.shipCharged;
+    const buyerTotal = itemPlusShip + state.salesTax;
+
+    let commission = 0;
+    let detail = '—';
+    if (state.fbMode === 'shipped' && state.salePrice > 0) {
+      const calculated = buyerTotal * 0.10;
+      commission = Math.max(calculated, 0.80);
+      detail = calculated < 0.80
+        ? `$0.80 minimum (10% would be ${fmt(calculated)})`
+        : `10% × ${fmt(buyerTotal)} (item + ship + tax)`;
+    } else if (state.fbMode === 'local') {
+      detail = 'Local pickup — no platform fee';
+    }
+
+    return {
+      buyerTotal,
+      sellerRevenue: itemPlusShip,
+      commission: {
+        label: 'Facebook Selling Fee',
+        amount: commission,
+        detail,
+      },
+      processing: null,
+      listingFee: 0,
+      promoFee: 0,
+      intlFee: 0,
+      rateForHint: state.fbMode === 'shipped' ? 10 : 0,
+    };
+  }
+
+  /* =====================================================================
+     RENDER
+     ===================================================================== */
+
   const $ = id => document.getElementById(id);
   const fmt = n => '$' + (Math.round(n * 100) / 100).toFixed(2);
   const fmtNeg = n => n > 0 ? '−$' + (Math.round(n * 100) / 100).toFixed(2) : '$0.00';
 
-  function getCat() { return CATEGORIES.find(c => c.id === state.catId) || CATEGORIES[0]; }
+  function applyPlatformUI() {
+    const p = PLATFORMS[state.platform];
+    const s = p.show;
 
-  function getRate() {
-    const c = getCat();
-    // Custom rate override
-    if (state.customRate > 0) {
-      let rate = state.customRate;
-      if (state.sellerStatus === 'top' && state.trsPlus) rate = rate * 0.9;
-      return rate;
+    // Card title
+    $('listingTitle').textContent = `${p.name} Listing Details`;
+
+    // Category
+    $('categoryField').classList.toggle('hide', !s.category);
+    if (s.category) {
+      const sel = $('category');
+      sel.innerHTML = '';
+      p.categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        sel.appendChild(opt);
+      });
+      // Restore the right cat value
+      if (state.platform === 'ebay') sel.value = state.ebayCatId;
+      if (state.platform === 'whatnot') sel.value = state.whatnotCatId;
     }
-    let rate = state.hasStore ? c.store : c.no;
-    // TRS Plus discount: 10% off the % portion — only valid when Top Rated seller AND TRS Plus listing
-    if (state.sellerStatus === 'top' && state.trsPlus) rate = rate * 0.9;
-    return rate;
+
+    // eBay store / status
+    $('ebayStoreField').classList.toggle('hide', !s.ebayStore);
+
+    // FB mode
+    $('fbModeField').classList.toggle('hide', !s.fbMode);
+
+    // eBay tax FVF toggle
+    $('ebayTaxFvfField').classList.toggle('hide', !s.ebayTaxFvf);
+
+    // Promo field + label
+    $('promoField').classList.toggle('hide', !s.promo);
+    if (s.promo) $('promoLabel').textContent = p.promoLabel;
+
+    // Advanced toggle/panel
+    document.querySelector('.advanced-toggle').classList.toggle('hide', !s.advanced);
+    if (!s.advanced) {
+      $('advBtn').classList.remove('open');
+      $('advPanel').classList.remove('open');
+    }
+
+    // Tax hint
+    $('taxHint').textContent = p.taxHint;
+
+    // Listing fee row in breakdown
+    $('listingFeeRow').style.display = s.listingFee ? 'flex' : 'none';
   }
 
   function calculate() {
-    const cat = getCat();
-    const itemPlusShip = state.salePrice + state.shipCharged;
-    const buyerTotal = itemPlusShip + state.salesTax; // what buyer actually pays
-    const fvfBase = state.chargeFvfOnTax ? itemPlusShip + state.salesTax : itemPlusShip;
-    const rate = getRate();
+    const result = PLATFORMS[state.platform].calc();
 
-    // Final value fee — tiered if HV threshold/rate set
-    let fvfPercent;
-    if (state.hvThreshold > 0 && state.hvRate > 0 && fvfBase > state.hvThreshold) {
-      // First portion at standard rate, excess at reduced rate
-      const lower = state.hvThreshold * (rate / 100);
-      const upper = (fvfBase - state.hvThreshold) * (state.hvRate / 100);
-      fvfPercent = lower + upper;
+    // Buyer/seller summary
+    $('totalSale').textContent = fmt(result.buyerTotal);
+
+    // Commission row
+    $('commissionLabel').textContent = result.commission.label;
+    $('commissionOut').textContent = fmtNeg(result.commission.amount);
+    $('commissionDetail').textContent = result.commission.detail;
+
+    // Processing row (toggle based on platform)
+    if (result.processing) {
+      $('processingRow').style.display = 'flex';
+      $('processingDetail').style.display = 'block';
+      $('processingLabel').textContent = result.processing.label;
+      $('processingOut').textContent = fmtNeg(result.processing.amount);
+      $('processingDetail').textContent = result.processing.detail;
     } else {
-      fvfPercent = fvfBase * (rate / 100);
+      $('processingRow').style.display = 'none';
+      $('processingDetail').style.display = 'none';
     }
-    // Heavy Equipment cap example
-    if (cat.cap) fvfPercent = Math.min(fvfPercent, cat.cap);
-    const perOrder = perOrderFee(fvfBase, cat);
 
-    // Below Standard penalty: +6% of FVF base, on top of normal FVF
-    const belowStandardPenalty = state.sellerStatus === 'below' ? fvfBase * 0.06 : 0;
-
-    // High INAD penalty: +5% of FVF base (only if NOT below standard — eBay docs note only one applies)
-    const inadPenalty = (state.highInad && state.sellerStatus !== 'below') ? fvfBase * 0.05 : 0;
-
-    const fvf = fvfPercent + perOrder + belowStandardPenalty + inadPenalty;
-
-    // Promoted Listing fee — % of item + shipping (NOT tax)
-    const promoFee = itemPlusShip * (state.promoRate / 100);
-
-    // International fee: 1.65% of total sale (item + shipping + tax)
-    const intlFee = state.isInternational ? buyerTotal * 0.0165 : 0;
-
-    // Profit — tax does NOT count as seller income (eBay remits to state)
-    const sellerRevenue = itemPlusShip; // tax bypasses seller
-    const totalCosts = state.cogs + state.shipCost + state.otherCost;
-    const profit = sellerRevenue - fvf - promoFee - intlFee - totalCosts;
-    const margin = sellerRevenue > 0 ? (profit / sellerRevenue) * 100 : 0;
-
-    // Effective fee rate (eBay take vs. seller revenue)
-    const effRate = sellerRevenue > 0 ? ((fvf + promoFee + intlFee) / sellerRevenue) * 100 : 0;
-
-    // Render
-    $('catRate').textContent = `${rate.toFixed(2)}% rate`;
-    $('totalSale').textContent = fmt(buyerTotal);
-    $('fvfTotal').textContent = fmtNeg(fvf);
-
-    // Build FVF detail string
-    let detailParts = [];
-    if (fvfBase > 0) {
-      if (state.hvThreshold > 0 && state.hvRate > 0 && fvfBase > state.hvThreshold) {
-        detailParts.push(`${rate.toFixed(2)}% × ${fmt(state.hvThreshold)} + ${state.hvRate.toFixed(2)}% × ${fmt(fvfBase - state.hvThreshold)}`);
-      } else {
-        detailParts.push(`${rate.toFixed(2)}% × ${fmt(fvfBase)}`);
-      }
-      if (perOrder > 0) detailParts.push(`+ ${fmt(perOrder)} per-order`);
-      if (belowStandardPenalty > 0) detailParts.push(`+ ${fmt(belowStandardPenalty)} below-std penalty`);
-      if (inadPenalty > 0) detailParts.push(`+ ${fmt(inadPenalty)} INAD penalty`);
-    }
-    $('fvfDetail').textContent = detailParts.length ? detailParts.join(' ') : '—';
-
-    // Status hint
-    if (state.sellerStatus === 'below') {
-      $('statusHint').textContent = '+6% penalty on FVF';
-    } else if (state.sellerStatus === 'top') {
-      $('statusHint').textContent = state.trsPlus ? '−10% off rate (TRS Plus)' : 'Top Rated · no discount yet';
+    // Listing fee
+    if (result.listingFee > 0) {
+      $('listingFeeRow').style.display = 'flex';
+      $('listingFeeOut').textContent = fmtNeg(result.listingFee);
     } else {
-      $('statusHint').textContent = 'no fee adjustment';
+      $('listingFeeRow').style.display = 'none';
     }
 
-    // Show/hide TRS Plus field based on status
-    $('trsPlusField').style.display = state.sellerStatus === 'top' ? 'block' : 'none';
+    // Promo fee
+    if (result.promoFee > 0) {
+      $('promoRow').style.display = 'flex';
+      $('promoFeeOut').textContent = fmtNeg(result.promoFee);
+    } else {
+      $('promoRow').style.display = 'none';
+    }
 
-    $('cogsOut').textContent = fmtNeg(state.cogs);
-    $('shipOut').textContent = fmtNeg(state.shipCost);
+    // International fee (eBay only)
+    if (result.intlFee > 0) {
+      $('intlRow').style.display = 'flex';
+      $('intlFeeOut').textContent = fmtNeg(result.intlFee);
+    } else {
+      $('intlRow').style.display = 'none';
+    }
 
+    // INAD row hidden — we fold into commission detail
+    $('inadRow').style.display = 'none';
+
+    // Tax row
     if (state.salesTax > 0) {
       $('taxRow').style.display = 'flex';
       $('taxOut').textContent = fmt(state.salesTax);
-      $('taxHint').textContent = state.chargeFvfOnTax
-        ? `+${fmt(state.salesTax * rate / 100)} extra FVF`
-        : 'collected by eBay · remitted to state';
     } else {
       $('taxRow').style.display = 'none';
-      $('taxHint').textContent = state.chargeFvfOnTax
-        ? 'FVF will be charged on tax'
-        : 'collected by eBay · remitted to state';
     }
 
+    // Costs
+    $('cogsOut').textContent = fmtNeg(state.cogs);
+    $('shipOut').textContent = fmtNeg(state.shipCost);
     if (state.otherCost > 0) {
       $('otherRow').style.display = 'flex';
       $('otherOut').textContent = fmtNeg(state.otherCost);
@@ -1000,45 +1330,64 @@
       $('otherRow').style.display = 'none';
     }
 
-    if (promoFee > 0) {
-      $('promoRow').style.display = 'flex';
-      $('promoFee').textContent = fmtNeg(promoFee);
-      $('promoHint').textContent = `${fmt(promoFee)} extra fee`;
-    } else {
-      $('promoRow').style.display = 'none';
-      $('promoHint').textContent = '0%';
-    }
-
-    if (intlFee > 0) {
-      $('intlRow').style.display = 'flex';
-      $('intlFee').textContent = fmtNeg(intlFee);
-    } else {
-      $('intlRow').style.display = 'none';
-    }
-
-    if (inadPenalty > 0) {
-      $('inadRow').style.display = 'flex';
-      $('inadFee').textContent = fmtNeg(inadPenalty);
-    } else {
-      $('inadRow').style.display = 'none';
-    }
+    // Totals
+    const totalFees = result.commission.amount
+                    + (result.processing ? result.processing.amount : 0)
+                    + result.listingFee + result.promoFee + result.intlFee;
+    const totalCosts = state.cogs + state.shipCost + state.otherCost;
+    const profit = result.sellerRevenue - totalFees - totalCosts;
+    const margin = result.sellerRevenue > 0 ? (profit / result.sellerRevenue) * 100 : 0;
+    const effRate = result.sellerRevenue > 0 ? (totalFees / result.sellerRevenue) * 100 : 0;
 
     const profitEl = $('profit');
     profitEl.textContent = (profit < 0 ? '−$' : '$') + Math.abs(profit).toFixed(2);
-    profitEl.className = 'profit-value ' + (
-      profit > 0.005 ? 'positive' :
-      profit < -0.005 ? 'negative' : 'neutral'
-    );
+    profitEl.className = 'profit-value ' + (profit > 0.005 ? 'positive' : profit < -0.005 ? 'negative' : 'neutral');
 
-    $('margin').textContent = sellerRevenue > 0
+    $('margin').textContent = result.sellerRevenue > 0
       ? `${margin >= 0 ? '+' : ''}${margin.toFixed(1)}% margin`
       : '— margin';
-
     $('effRate').textContent = effRate.toFixed(1) + '%';
-    $('meterFill').style.width = Math.min(100, effRate * 4) + '%'; // 25% = full bar
+    $('meterFill').style.width = Math.min(100, effRate * 4) + '%';
+
+    // Category rate hint
+    if (PLATFORMS[state.platform].show.category) {
+      $('catRate').textContent = `${result.rateForHint.toFixed(2)}% rate`;
+    }
+
+    // Promo hint
+    if (PLATFORMS[state.platform].show.promo) {
+      if (result.promoFee > 0) {
+        $('promoHint').textContent = `${fmt(result.promoFee)} extra fee`;
+      } else {
+        $('promoHint').textContent = '0%';
+      }
+    }
+
+    // Status hint (eBay only)
+    if (state.platform === 'ebay') {
+      if (state.sellerStatus === 'below') $('statusHint').textContent = '+6% penalty on FVF';
+      else if (state.sellerStatus === 'top') $('statusHint').textContent = state.trsPlus ? '−10% off rate (TRS Plus)' : 'Top Rated · no discount yet';
+      else $('statusHint').textContent = 'no fee adjustment';
+      $('trsPlusField').style.display = state.sellerStatus === 'top' ? 'block' : 'none';
+    }
   }
 
-  // Wire inputs
+  /* =====================================================================
+     EVENT WIRING
+     ===================================================================== */
+
+  // Platform tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      state.platform = tab.dataset.platform;
+      applyPlatformUI();
+      calculate();
+    });
+  });
+
+  // Numeric inputs
   ['salePrice','shipCharged','shipCost','salesTax','cogs','promoRate','otherCost','hvThreshold','hvRate','customRate'].forEach(id => {
     $(id).addEventListener('input', e => {
       state[id] = parseFloat(e.target.value) || 0;
@@ -1046,31 +1395,14 @@
     });
   });
 
-  // Advanced section accordion
-  const advBtn = $('advBtn');
-  const advPanel = $('advPanel');
-  advBtn.addEventListener('click', () => {
-    advBtn.classList.toggle('open');
-    advPanel.classList.toggle('open');
-  });
-
-  // Advanced switches (international, INAD)
-  $('swIntl').addEventListener('click', () => {
-    $('swIntl').classList.toggle('on');
-    state.isInternational = $('swIntl').classList.contains('on');
-    calculate();
-  });
-  $('swInad').addEventListener('click', () => {
-    $('swInad').classList.toggle('on');
-    state.highInad = $('swInad').classList.contains('on');
+  // Category select — context-aware based on platform
+  $('category').addEventListener('change', e => {
+    if (state.platform === 'ebay') state.ebayCatId = e.target.value;
+    if (state.platform === 'whatnot') state.whatnotCatId = e.target.value;
     calculate();
   });
 
-  catSelect.addEventListener('change', e => {
-    state.catId = e.target.value;
-    calculate();
-  });
-
+  // eBay store toggle
   document.querySelectorAll('.toggle[data-store]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.toggle[data-store]').forEach(b => b.classList.remove('active'));
@@ -1080,12 +1412,12 @@
     });
   });
 
+  // eBay seller status
   document.querySelectorAll('.toggle[data-status]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.toggle[data-status]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.sellerStatus = btn.dataset.status;
-      // Reset TRS Plus when leaving Top Rated tier
       if (state.sellerStatus !== 'top') {
         state.trsPlus = false;
         document.querySelectorAll('.badge-toggle[data-trsplus]').forEach(b => b.classList.remove('active'));
@@ -1105,6 +1437,7 @@
     });
   });
 
+  // eBay tax-FVF toggle
   document.querySelectorAll('.toggle[data-taxfvf]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.toggle[data-taxfvf]').forEach(b => b.classList.remove('active'));
@@ -1114,7 +1447,36 @@
     });
   });
 
+  // FB shipped/local toggle
+  document.querySelectorAll('.toggle[data-fbmode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toggle[data-fbmode]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.fbMode = btn.dataset.fbmode;
+      calculate();
+    });
+  });
+
+  // Advanced accordion
+  $('advBtn').addEventListener('click', () => {
+    $('advBtn').classList.toggle('open');
+    $('advPanel').classList.toggle('open');
+  });
+
+  // Advanced switches
+  $('swIntl').addEventListener('click', () => {
+    $('swIntl').classList.toggle('on');
+    state.isInternational = $('swIntl').classList.contains('on');
+    calculate();
+  });
+  $('swInad').addEventListener('click', () => {
+    $('swInad').classList.toggle('on');
+    state.highInad = $('swInad').classList.contains('on');
+    calculate();
+  });
+
   // Initial render
+  applyPlatformUI();
   calculate();
 </script>
 </body>
