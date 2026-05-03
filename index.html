@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0a0e1a">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FlippinFees">
 <title>FlippinFees — Multi-Platform Reseller Fee Calculator</title>
-<link rel="manifest" href='data:application/manifest+json,{"name":"FlippinFees","short_name":"FlippinFees","start_url":".","display":"standalone","background_color":"#0a0e1a","theme_color":"#0a0e1a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%230a0e1a%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
-<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%230a0e1a%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"FlippinFees","short_name":"FlippinFees","start_url":".","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%23000000%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
+<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2300d97a%22/><path d=%22M96 30v132M124 60c0-13-12-23-28-23s-28 10-28 23 12 20 28 23 28 10 28 23-12 23-28 23-28-10-28-23%22 stroke=%22%23000000%22 stroke-width=%2214%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 fill=%22none%22/></svg>'>
 <style>
   :root {
-    --bg: #0a0e1a;
-    --bg-elev: #131826;
-    --bg-elev-2: #1a2032;
-    --border: #232a3d;
-    --border-bright: #2f3854;
+    --bg: #000000;
+    --bg-elev: #0f0f0f;
+    --bg-elev-2: #1a1a1a;
+    --border: #262626;
+    --border-bright: #333333;
     --text: #e8ecf5;
     --text-dim: #8a93a8;
     --text-faint: #5a6378;
@@ -215,7 +215,7 @@
   input:focus, select:focus {
     outline: none;
     border-color: var(--accent);
-    background: #1f2638;
+    background: #1f1f1f;
   }
   input::placeholder { color: var(--text-faint); }
   input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
@@ -274,7 +274,7 @@
 
   /* Result panel */
   .result-card {
-    background: linear-gradient(140deg, #131826 0%, #1a2032 100%);
+    background: linear-gradient(140deg, #0f0f0f 0%, #1a1a1a 100%);
     border: 1px solid var(--border-bright);
     border-radius: 22px;
     padding: 22px;
@@ -475,7 +475,7 @@
     <div class="logo">
       <div class="logo-mark">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2v20M16 6.5c0-1.93-1.79-3.5-4-3.5s-4 1.57-4 3.5 1.79 3 4 3.5 4 1.57 4 3.5-1.79 3.5-4 3.5-4-1.57-4-3.5" stroke="#0a0e1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2v20M16 6.5c0-1.93-1.79-3.5-4-3.5s-4 1.57-4 3.5 1.79 3 4 3.5 4 1.57 4 3.5-1.79 3.5-4 3.5-4-1.57-4-3.5" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="logo-text">Flippin<span>Fees</span></div>
